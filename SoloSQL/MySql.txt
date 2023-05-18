@@ -1,0 +1,49 @@
+#sacar nombre de artista segun inicial"M"
+select name from artist where name REGEXP '^M';
+
+#sacar el id del grupo "metalica"#(50)
+select ArtistId, name from artist where Name like'Metallica';
+
+#sacar lista de albunes de metalica
+select title from album where ArtistId = 50;
+
+#saca el identificador de un albun(151)
+select AlbumId from album where Title = 'load';
+
+#saca el numero de canciones del albun load(151)
+select count(TrackId) from track where AlbumId = 151;
+
+#saca el numero de camciones del album load(151) uniendo todas las consultas anteriores
+ select count(TrackId) from track where AlbumId = (select AlbumId from album where Title = 'Load' AND ArtistId = (select ArtistId from artist where Name LIKE 'Metallica'));
+
+#
+select PlaylistId from playlisttrack where TrackId = 151
+
+#sacar precio de los albunes#
+select AlbumId,sum(UnitPrice) from track group by AlbumId;
+
+#sacar precios de menos a mas de los albunes#
+select AlbumId,sum(UnitPrice) as total from track group by AlbumId order by total ;
+
+#sacar el precio mas alto de la lista, el cual es el ultimo o mas abajo de la lista#
+select AlbumId,sum(UnitPrice) as total from track group by AlbumId order by total desc limit 1;
+
+#poner alias a una consulta
+(select AlbumId,sum(UnitPrice) as total from track group by AlbumId order by total desc limit 1);
+ 
+#ahora "P" es toda la consulta anterior
+#sacar id del albun que tiene el precio mas alto, usando "P"
+ select P.AlbumId from (select AlbumId,sum(UnitPrice) as total from track group by AlbumId order by total desc limit 1) P;
+ 
+#ahora usasmos "p" y haCEMOS otra que se llama"A" y sacamos el mombre el album mas caro
+SELECT A.Title, P.AlbumId FROM  
+(select AlbumId,SUM(UnitPrice) AS Total  from track GROUP BY AlbumId ORDER BY Total DESC LIMIT 1) P,
+(select AlbumId, Title FROM album) A
+WHERE P.AlbumId = A.AlbumId;
+#esta consulta es un poco bestia.
+
+
+#sacar de una lista nombre de los artistas, segun inicial mas sus albunes
+SELECT A.name, B.Title FROM (SELECT name,ArtistID FROM artist WHERE name REGEXP "^A") A, (SELECT Title,ArtistID FROM album) B WHERE A.ArtistID = B.ArtistID;
+ 
+ 
